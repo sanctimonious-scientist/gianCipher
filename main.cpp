@@ -11,17 +11,32 @@ void debugM(std::string dMessage) {
 	return;
 }
 
-std::string descramble(std::string message, std::string sign, std::string otherSign, std::string conversion[2][3]) {
+std::string descramble(std::string message, std::string conversion[3][2][3]) {
 	std::string singleSign;
 	std::string otherSignSingle;
 	std::string doubleSingleSign;
-	int arrayChoice;
-	while (message.find(sign) != std::string::npos) {
+	std::string sign;
+	std::string otherSign;
+	std::string partialMessage;
+	std::string decoded;
+	int arrayChoice; // Decides which column to use depending on even and odd
+	int signChoice; // Chooses what sign is currently being dealt with; 0 is !, ? is 1, & is 2, $ is 4
+	std::string signArr[4] = {"!", "?", "&", "$"};
+	while (message.find("_") != std::string::npos) {
+		for (int i = 0; i < 3; i++) {
+ 			if (message.find("_") - 1 == message.find(signArr[i])) {
+				sign = signArr[i];
+				otherSign = signArr[i + 1];
+				signChoice = i;
+				break;
+			}
+		}
+		partialMessage = message.substr(0, message.find("_"));
 		j++;
 		arrayChoice = j % 2;
-		singleSign = conversion[arrayChoice][0];
-		otherSignSingle = conversion[arrayChoice][1]; //questionExclamation basically
-		doubleSingleSign = conversion[arrayChoice][2];
+		singleSign = conversion[signChoice][arrayChoice][0];
+		otherSignSingle = conversion[signChoice][arrayChoice][1]; //questionExclamation basically
+		doubleSingleSign = conversion[signChoice][arrayChoice][2];
 		if (message.find(otherSign + sign) != std::string::npos) {
 			if (message.find(otherSign + sign) == message.find(sign) - 1) {
 				message.replace(message.find(otherSign + sign), 2, otherSignSingle);
@@ -51,9 +66,7 @@ int main(int argc, char** argv) {
 	}
 	std::string input;
 	std::string choice;
-	std::string exclamationValues[2][3] = {{"1", "0", "5"}, {"2", "1", "4"}};
-	std::string questionValues[2][3] = {{"3", "6", "2"}, {"0", "5", "3"}};
-	std::string ampersandValues[2][3] = {{"4", "7", "9"}, {"9", "6", "7"}};
+	std::string values[3][2][3] = { {{"1", "0", "5"}, {"2", "1", "4"}}, {{"3", "6", "2"}, {"0", "5", "3"}}, {{"4", "7", "9"}, {"9", "6", "7"}} }; //exclamation, question, ampersand
 	std::cout << "GIANCIPHER V 1.0\nEnter message." << std::endl;
 	getline(std::cin, input);
 	while (true) {
@@ -64,9 +77,7 @@ int main(int argc, char** argv) {
 			std::cout << "Scrambling coming soon!" << std::endl;
 		}
 		else if (choice == "D" || choice == "d") {
-			input = descramble(input, "!", "?", exclamationValues);
-			input = descramble(input, "?", "!", questionValues);
-			input = descramble(input, "&", "$", ampersandValues);
+			input = descramble(input, values);
 			std::string finalize[2][2] = {{"$", "8"}, {"_", ""}};
 			for (int i = 0; i < 2; i++) {
 				while (input.find(finalize[i][0]) != std::string::npos) {
