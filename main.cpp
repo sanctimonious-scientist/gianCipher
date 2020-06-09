@@ -1,9 +1,15 @@
 #include <iostream>
 #include <string>
-#define RMSG return message
 
 int j = 0;
 bool debug = false;
+
+void debugM(std::string dMessage) {
+	if (debug) {
+		std::cout << dMessage << std::endl;
+	}
+	return;
+}
 
 std::string descramble(std::string message, std::string sign, std::string otherSign, std::string conversion[2][3]) {
 	std::string singleSign;
@@ -19,20 +25,21 @@ std::string descramble(std::string message, std::string sign, std::string otherS
 		if (message.find(otherSign + sign) != std::string::npos) {
 			if (message.find(otherSign + sign) == message.find(sign) - 1) {
 				message.replace(message.find(otherSign + sign), 2, otherSignSingle);
-				RMSG;
+				continue;
 			}
 		}
 		if (message.find(message.find(sign + sign)) != std::string::npos) {
 			if (message.find(sign) == message.find(sign + sign)) {
 				message.replace(message.find(sign + sign), 2, doubleSingleSign);
-				RMSG;
+				continue;
 			}
 		}
 		else {
 			message.replace(message.find(sign), 1, singleSign);
+			continue;
 		}
 	}
-	RMSG;
+	return message;
 }
 
 int main(int argc, char** argv) {
